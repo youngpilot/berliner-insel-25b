@@ -18,5 +18,5 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: '/berliner-insel-25/' // Replace with your GitHub repo name
+  base: '/berliner-insel-25b/' // Replace with your GitHub repo name
 }));
