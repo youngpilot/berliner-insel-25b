@@ -9,36 +9,34 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Stelle sicher, dass die Version zu deiner lokalen Umgebung passt
+          node-version: 18  # Passe dies an deine Node.js-Version an
+          cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install npm dependencies
+        run: npm ci
 
-      - name: Build Website
-        run: npm run build
+      - name: Set up Ruby for Jekyll
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'  # Passe dies an deine Jekyll-Version an
+          bundler-cache: true
 
-      - name: Verify Build Output
+      - name: Build site
         run: |
-          if [ ! -d "dist" ]; then
-            echo "Fehler: Das dist-Verzeichnis wurde nicht erstellt."
-            exit 1
-          fi
-          if [ -z "$(ls -A dist/)" ]; then
-            echo "Fehler: Das dist-Verzeichnis ist leer."
-            exit 1
-          fi
-          echo "Build erfolgreich. Inhalt von dist/:"
-          ls -la dist/
+          bundle exec jekyll build --destination dist
+          npm run build
 
-      - name: Upload Build Artifact
+      - name: List build output (Debug)
+        run: ls -la dist/
+
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: website-build
+          name: build-output
           path: dist/
-          retention-days: 5
