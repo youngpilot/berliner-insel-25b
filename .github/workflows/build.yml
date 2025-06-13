@@ -1,0 +1,44 @@
+name: Build Website
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Stelle sicher, dass die Version zu deiner lokalen Umgebung passt
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Website
+        run: npm run build
+
+      - name: Verify Build Output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Fehler: Das dist-Verzeichnis wurde nicht erstellt."
+            exit 1
+          fi
+          if [ -z "$(ls -A dist/)" ]; then
+            echo "Fehler: Das dist-Verzeichnis ist leer."
+            exit 1
+          fi
+          echo "Build erfolgreich. Inhalt von dist/:"
+          ls -la dist/
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-build
+          path: dist/
+          retention-days: 5
